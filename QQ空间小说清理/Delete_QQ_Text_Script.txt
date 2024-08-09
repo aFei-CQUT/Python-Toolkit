@@ -1,0 +1,36 @@
+// 删除一个
+function singleDel() {
+    // 点击删除按钮
+    var appCanvasFrame = document.querySelector('.app_canvas_frame');
+    if (appCanvasFrame) {
+        var delBtn = appCanvasFrame.contentDocument.querySelector('.del_btn');
+        if (delBtn) {
+            delBtn.click();
+            var delayMs = 2000; // 间隔毫秒数，点击删除按钮后等待页面更新时间
+            setTimeout(function() {
+                // 点击确认删除按钮
+                var qzDialogLayerBtn = document.querySelector('.qz_dialog_layer_btn');
+                if (qzDialogLayerBtn) {
+                    qzDialogLayerBtn.click();
+                }
+            }, delayMs);
+        }
+    }
+}
+
+// 批量删除指定数量
+function batchDel(num) {
+    var delayMs = 3000; // 间隔毫秒数，每删除一个等待页面更新时间
+    var count = 0;
+    var intervalTask = setInterval(function() {
+        count += 1;
+        if (count >= num) {
+            clearInterval(intervalTask);
+        }
+        singleDel();
+        console.log(count);
+    }, delayMs);
+}
+
+// 删除50个，自己设置
+batchDel(50);

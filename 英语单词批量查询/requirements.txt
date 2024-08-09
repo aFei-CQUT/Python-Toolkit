@@ -1,0 +1,6 @@
+
+### `requirements.txt`
+
+```text
+pandas
+eng_to_ipa
