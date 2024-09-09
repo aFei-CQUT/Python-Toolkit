@@ -18,7 +18,8 @@ IGNORE_EXTENSIONS = [
     '.pack',
     '.rev',
     '.sample',
-    'jpg'
+    'jpg',
+    '.xmind'
 ]
 
 IGNORE_FILES = [
@@ -104,6 +105,6 @@ def write_directory_contents_to_file(input_dir, output_file_name):
                 output_file.write("\n\n")  # 在文件之间添加一些间隔
 
 if __name__ == "__main__":
-    input_directory = 'D:/gitNow/Math-Modeling/(3) 遗传算法/nsga2constrained'
+    input_directory = r'D:\EdgeDownloads\MathematicalModelingEssayTemplate-master'
     output_file_name = f"{os.path.basename(input_directory)}.txt"
     write_directory_contents_to_file(input_directory, output_file_name)

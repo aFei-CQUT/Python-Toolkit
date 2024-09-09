@@ -1,0 +1,373 @@
+目录结构：
+|-- 文件: cattle.py
+|-- 文件: main.py
+|-- 文件夹: __pycache__
+|   |-- 文件: cattle.cpython-312.pyc
+
+
+================================================================================
+E:\LGRepository\China-Undergraduate-Mathematical-Contest-in-Modeling\第一次模拟训练A题\Python处理代码\cattle.py 的内容:
+================================================================================
+import numpy as np
+
+# 定义类:牛群
+class Cattle:
+    def __init__(self, x0, birth_rates, survival_rates, alphas, betas, gamma, r, M, years=5):
+        # Leslie 矩阵
+        self.x0 = x0                         # 初始种群数量分布向量
+        self.xs = [self.x0.copy()]           # 种群数量分布向量列表
+        self.birth_rates = birth_rates       # 出生率
+        self.survival_rates = survival_rates # 存活率
+        self.alphas = alphas                 # alpha参数
+        self.betas = betas                   # beta参数
+        self.gamma = gamma                   # gamma参数
+        self.r = r                           # r参数
+        self.M = M                           # M参数
+        self.years = years                   # 模拟年数
+        self.n = len(x0)                     # 种群中年龄组的个数
+        self.L_pp = self.create_L_pp()       # 创建L_pp矩阵
+        self.L_p = np.vstack([self.L_pp[0, :] * 0.5, self.L_pp[1:, :]])    # 创建L_p矩阵
+        self.L_r = np.vstack([self.L_p[0, :] * (1 - r), self.L_p[1:, :]])  # 创建L_r矩阵
+        # 选择向量
+        self.y_1 = np.zeros(self.n); self.y_1[0] = 1                       # y_1向量
+        self.y_12 = np.zeros(self.n); self.y_12[-1] = 1                    # y_12向量
+        self.y_1_2 = np.zeros(self.n); self.y_1_2[0:2] = 1                 # y_1_2向量
+        self.y_3_12 = np.zeros(self.n); self.y_3_12[2:] = 1                # y_3_12向量
+        self.reset_metrics()                                               # 重置指标
+
+    def create_L_pp(self):
+        L_pp = np.zeros((self.n, self.n))
+        L_pp[0, :] = self.birth_rates
+        for i in range(1, self.n):
+            L_pp[i, i-1] = self.survival_rates[i-1]
+        return L_pp
+
+    def reset_metrics(self):
+        # 初始化指标
+        self.alphas_metrics = [0]                # alpha指标
+        self.betas_metrics = [[0, 0, 0, 0]]      # beta指标
+        self.gammas = [0]                        # gamma指标
+        self.q_betas = [0]                       # q_beta指标
+        self.q_gammas = [0]                      # q_gamma指标
+        self.l_betas = [0]                       # l_beta指标
+        self.l_gammas = [0]                      # l_gamma指标
+        self.w_betas = [0]                       # w_beta指标
+        self.w_gammas = [0]                      # w_gamma指标
+        self.c_xiaomunius = [0]                  # 小母牛成本
+        self.c_damunius = [0]                    # 大母牛成本
+        self.c_betas = [0]                       # beta成本
+        self.c_gammas = [0]                      # gamma成本
+        self.t_xiaomunius = [0]                  # 小母牛总数
+        self.t_damunius = [0]                    # 大母牛总数
+        self.t_betas = [0]                       # beta总数
+        self.t_gammas = [0]                      # gamma总数
+        self.t_totals = [0]                      # 总数
+        self.c_workers = [0]                     # 工人成本
+        self.num_xiaogongniu_sales = [0]         # 小公牛销售数量
+        self.num_xiaomuniu_sales = [0]           # 小母牛销售数量
+        self.num_damuniu_sales = [0]             # 大母牛销售数量
+        self.num_laomuniu_sales = [0]            # 老母牛销售数量
+        self.w_xiaogongniu = [0]                 # 小公牛收入
+        self.w_xiaomuniu = [0]                   # 小母牛收入
+        self.w_damuniu = [0]                     # 大母牛收入
+        self.w_laomuniu = [0]                    # 老母牛收入
+        self.w_years = [0]                       # 年收入
+        self.c_years = [0]                       # 年成本
+        self.E_years = [0]                       # 年利润
+
+    def simulate(self):
+        for year in range(self.years):
+            x = self.xs[-1]                      # 当前年份的种群数量分布
+            self.update_metrics(x)               # 更新指标
+            self.update_population()             # 更新种群数量
+        return -self.calculate_total_profit()    # 返回总利润的负值
+
+    def update_metrics(self, x):
+        alpha = self.alphas
+        beta1, beta2, beta3, beta4 = self.betas
+        gamma = self.gamma
+        
+        q_beta = beta1 * 1.1 + beta2 * 0.9 + beta3 * 0.8 + beta4 * 0.6  # q_beta计算
+        q_gamma = 1.5 * gamma                                           # q_gamma计算
+        l_beta = q_beta - 0.6 * np.sum(x[2:12])                         # l_beta计算
+        l_gamma = q_gamma - 0.7 * np.sum(x[2:12])                       # l_gamma计算
+        
+        w_beta = l_beta * 75 if l_beta > 0 else l_beta * 90             # w_beta计算
+        w_gamma = l_gamma * 58 if l_gamma > 0 else l_gamma * 70         # w_gamma计算
+
+        # 更新指标
+        self.alphas_metrics.append(alpha)
+        self.betas_metrics.append([beta1, beta2, beta3, beta4])
+        self.gammas.append(gamma)
+        self.q_betas.append(q_beta)
+        self.q_gammas.append(q_gamma)
+        self.l_betas.append(l_beta)
+        self.l_gammas.append(l_gamma)
+        self.w_betas.append(w_beta)
+        self.w_gammas.append(w_gamma)
+
+        # 销售数量计算
+        num_xiaogongniu_sales = self.L_p @ x @ self.y_1
+        num_xiaomuniu_sales = self.L_p @ x @ self.y_1 * self.r
+        num_damuniu_sales = self.L_r @ x @ self.y_3_12
+        num_laomuniu_sales = self.L_r @ x @ self.y_12
+
+        # 更新销售数量
+        self.num_xiaogongniu_sales.append(num_xiaogongniu_sales)
+        self.num_xiaomuniu_sales.append(num_xiaomuniu_sales)
+        self.num_damuniu_sales.append(num_damuniu_sales)
+        self.num_laomuniu_sales.append(num_laomuniu_sales)
+
+        # 收入计算
+        self.w_xiaogongniu.append(30 * num_xiaogongniu_sales)
+        self.w_xiaomuniu.append(40 * num_laomuniu_sales)
+        self.w_damuniu.append(370 * num_damuniu_sales)
+        self.w_laomuniu.append(120 * num_laomuniu_sales)
+
+        # 总数和成本计算
+        self.t_xiaomunius.append(x @ self.y_1_2)
+        self.t_damunius.append(x @ self.y_3_12)
+        self.t_betas.append(4 * (beta1 + beta2 + beta3 + beta4))
+        self.t_gammas.append(14 * gamma)
+        self.t_totals.append(x @ self.y_1_2 + x @ self.y_3_12 + 4 * (beta1 + beta2 + beta3 + beta4) + 14 * gamma)
+
+        self.c_xiaomunius.append(500 * x @ self.y_1_2)
+        self.c_damunius.append(100 * x @ self.y_3_12)
+        self.c_betas.append(15 * (beta1 + beta2 + beta3 + beta4))
+        self.c_gammas.append(10 * gamma)
+        self.c_workers.append(4000 if self.t_totals[-1] <= 5500 else 4000 + self.t_totals[-1] * 1.2)
+
+        # 年收入和年成本计算
+        w_year = (self.w_xiaogongniu[-1] + self.w_xiaomuniu[-1] + self.w_damuniu[-1] + self.w_laomuniu[-1] + self.w_betas[-1] + self.w_gammas[-1])
+        self.w_years.append(w_year)
+
+        c_year = (self.c_betas[-1] + self.c_gammas[-1] + self.c_xiaomunius[-1] + self.c_damunius[-1] + self.c_workers[-1] + (self.M * 0.15) / (1 - (1 + 0.15) ** -10))
+        self.c_years.append(c_year)
+
+        E_year = w_year - c_year
+        self.E_years.append(E_year)
+
+    def update_population(self):
+        x = self.L_r @ self.xs[-1]
+        self.xs.append(np.maximum(np.round(x), 0))  # 取整并确保非负
+
+    def calculate_total_profit(self):
+        return sum(self.E_years)
+
+if __name__ == 'main':
+    # 初始参数
+    alpha = 1.0
+    beta1 = 0.5
+    beta2 = 0.6
+    beta3 = 0.7
+    beta4 = 0.8
+    gamma = 1.2
+    r = 0.3
+    M = 1000
+    
+    # 创建 Cattle 实例
+    cattle = Cattle(
+        x0=np.ones(12) * 10,  # 初始种群数量分布向量
+        birth_rates=np.array([0., 0., 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1]),  # 出生率
+        survival_rates=np.array([0.95, 0.95, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98]),  # 存活率
+        alphas=alpha,  # alpha参数
+        betas=[beta1, beta2, beta3, beta4],  # beta参数
+        gamma=gamma,  # gamma参数
+        r=r,          # r参数
+        M=M           # M参数
+    )
+
+
+================================================================================
+E:\LGRepository\China-Undergraduate-Mathematical-Contest-in-Modeling\第一次模拟训练A题\Python处理代码\main.py 的内容:
+================================================================================
+import numpy as np
+from deap import base, creator, tools
+from cattle import Cattle
+
+# 约束条件生成器函数
+def constraint_factory(cattle_model_func, constraint_value_func):
+    def constraint(params):
+        model = cattle_model_func(params)
+        try:
+            for _ in range(5):  # 模拟5年
+                model.simulate()
+            populations_numbers_of_distribution = model.populations_numbers_of_distribution
+            return constraint_value_func(populations_numbers_of_distribution, params)
+        except Exception as e:
+            print(f"Error in constraint calculation: {e}")
+            return 1e6  # 返回一个大的数值表示错误
+    return constraint
+
+# 定义各约束条件
+def constraint1_value(populations_numbers_of_distribution, params):
+    alpha, beta1, beta2, beta3, beta4, gamma, r, M = params
+    return np.sum(populations_numbers_of_distribution[-1]) - (M / 200 + 130)
+
+def constraint2_value(populations_numbers_of_distribution, params):
+    alpha, beta1, beta2, beta3, beta4, gamma, r, M = params
+    return M - 200 * (45 + np.sum(populations_numbers_of_distribution[-1][:2]))
+
+def constraint3_value(populations_numbers_of_distribution, params):
+    alpha, beta1, beta2, beta3, beta4, gamma, r, M = params
+    return alpha - (2 / 3 * np.sum(populations_numbers_of_distribution[-1][:2]) + np.sum(populations_numbers_of_distribution[-1][2:]))
+
+def constraint4_value(populations_numbers_of_distribution, params):
+    return np.sum(populations_numbers_of_distribution[-1][2:]) - 50
+
+def constraint5_value(populations_numbers_of_distribution, params):
+    return 175 - np.sum(populations_numbers_of_distribution[-1][2:])
+
+# 适应度评估函数
+def evaluate(individual):
+    alpha, beta1, beta2, beta3, beta4, gamma, r, M = individual
+    if alpha + beta1 + beta2 + beta3 + beta4 + gamma > 200:
+        return 10000000,  # 返回一个大的数值表示不可行
+    
+    model = create_cattle_model(individual)
+    
+    try:
+        profit = model.simulate()
+    except Exception as e:
+        print(f"Error in simulation: {e}")
+        profit = 10000000  # 返回一个大的数值表示错误
+    
+    return profit,
+
+# 变异函数
+def mutate(individual):
+    mut_choice = np.random.randint(0, len(individual))
+    mutation = np.random.uniform(-1, 1)  # 随机变异
+    individual[mut_choice] = max(0.1, individual[mut_choice] + mutation)  # 确保无负值
+    return individual,
+
+# 交叉函数
+def crossover(ind1, ind2):
+    if np.random.rand() < 0.5:  # 50%概率进行交叉
+        cxpoint = np.random.randint(1, len(ind1)-1)
+        ind1[cxpoint:], ind2[cxpoint:] = ind2[cxpoint:], ind1[cxpoint:]
+    
+    # 确保基因值非负
+    ind1 = np.maximum(ind1, 0.1)
+    ind2 = np.maximum(ind2, 0.1)
+    
+    return ind1, ind2
+
+# 创建适应度和个体
+creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
+creator.create("Individual", list, fitness=creator.FitnessMin)
+
+# 设置遗传算法参数
+population_size = 100
+num_generations = 100
+mutation_rate = 0.2
+crossover_rate = 0.5
+elite_size = 5  # 精英个体数量
+
+toolbox = base.Toolbox()
+toolbox.register("alpha", np.random.uniform, 0, 100)
+toolbox.register("beta1", np.random.uniform, 0, 20)
+toolbox.register("beta2", np.random.uniform, 0, 30)
+toolbox.register("beta3", np.random.uniform, 0, 30)
+toolbox.register("beta4", np.random.uniform, 0, 10)
+toolbox.register("gamma", np.random.uniform, 0, 100)
+toolbox.register("r", np.random.uniform, 0, 1)
+toolbox.register("M", np.random.uniform, 0, 1000000)
+toolbox.register("individual", tools.initCycle, creator.Individual,
+                 (toolbox.alpha, toolbox.beta1, toolbox.beta2, toolbox.beta3, toolbox.beta4, toolbox.gamma, toolbox.r, toolbox.M), n=1)
+toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+toolbox.register("evaluate", evaluate)
+toolbox.register("mate", crossover)
+toolbox.register("mutate", mutate)
+toolbox.register("select", tools.selTournament, tournsize=3)
+
+# 定义约束条件
+constraints = [
+    {'type': 'ineq', 'fun': constraint_factory(create_cattle_model, constraint1_value)},
+    {'type': 'ineq', 'fun': constraint_factory(create_cattle_model, constraint2_value)},
+    {'type': 'ineq', 'fun': constraint_factory(create_cattle_model, constraint3_value)},
+    {'type': 'ineq', 'fun': constraint_factory(create_cattle_model, constraint4_value)},
+    {'type': 'ineq', 'fun': constraint_factory(create_cattle_model, constraint5_value)}
+]
+
+# 主程序
+population = toolbox.population(n=population_size)
+best_fitness = float('inf')
+stagnation_counter = 0
+
+for gen in range(num_generations):
+    # 评估所有个体
+    invalid_ind = [ind for ind in population if not ind.fitness.valid]
+    fitnesses = list(map(toolbox.evaluate, invalid_ind))
+    for ind, fit in zip(invalid_ind, fitnesses):
+        ind.fitness.values = fit
+
+    # 记录当前最佳适应度
+    current_best = min(ind.fitness.values[0] for ind in population if ind.fitness.valid)
+    if current_best < best_fitness:
+        best_fitness = current_best
+        stagnation_counter = 0
+    else:
+        stagnation_counter += 1
+
+    # 动态调整变异和交叉率
+    if stagnation_counter > 10:
+        mutation_rate = min(0.5, mutation_rate * 1.1)
+        crossover_rate = max(0.3, crossover_rate * 0.9)
+        stagnation_counter = 0
+
+    # 精英保留
+    elites = tools.selBest(population, elite_size)
+    
+    # 选择
+    offspring = toolbox.select(population, len(population) - elite_size)
+    offspring = list(map(toolbox.clone, offspring))
+
+    # 交叉和变异
+    for child1, child2 in zip(offspring[::2], offspring[1::2]):
+        if np.random.rand() < crossover_rate:
+            toolbox.mate(child1, child2)
+            del child1.fitness.values
+            del child2.fitness.values
+
+    for mutant in offspring:
+        if np.random.rand() < mutation_rate:
+            toolbox.mutate(mutant)
+            del mutant.fitness.values
+
+    # 更新种群
+    population[:] = elites + offspring
+
+    # 打印当前代数和最佳适应度
+    print(f"Generation {gen}: Best Fitness = {-best_fitness}")
+
+# 最终评估
+fits = [ind.fitness.values[0] for ind in population if ind.fitness.valid]
+if not fits:
+    print("警告：没有有效的适应度值")
+else:
+    best_idx = np.argmin(fits)
+    best_ind = population[best_idx]
+
+    print(f"最优个体: {best_ind}")
+    print(f"最优适应度: {-fits[best_idx]}")
+
+    # 使用最优参数创建并模拟牛群模型
+    best_model = create_cattle_model(best_ind)
+    best_model.simulate()
+
+    # 输出最优模型的结果
+    print("\n最优模型结果:")
+    print(f"总利润: {best_model.calculate_total_profit()}")
+    print(f"最终种群: {best_model.populations_numbers_of_distribution[-1]}")
+    print(f"年度收入: {best_model.w_years}")
+    print(f"年度成本: {best_model.c_years}")
+    print(f"年度利润: {best_model.E_years}")
+
+    # 检查约束条件
+    for i, constraint in enumerate(constraints):
+        constraint_value = constraint['fun'](best_ind)
+        print(f"约束条件 {i+1}: {'满足' if constraint_value >= 0 else '不满足'} (值: {constraint_value})")
+
+
+

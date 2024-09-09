@@ -1,0 +1,482 @@
+目录结构：
+|-- 文件: .gitignore
+|-- 文件夹: .vscode
+|   |-- 文件: settings.json
+|-- 文件: LICENSE
+|-- 文件: parper.tex
+|-- 文件: README.md
+|-- 文件夹: res
+|   |-- 文件: 1.png
+|   |-- 文件: 全国大学生数学建模竞赛专用论文模板.png
+|   |-- 文件: 文件结构.xmind
+|-- 文件夹: src
+|   |-- 文件: A-Cover.tex
+|   |-- 文件: B-Analysis.tex
+|   |-- 文件: C-Solution.tex
+|   |-- 文件: D-Material.tex
+|   |-- 文件: E-Reference.bib
+|   |-- 文件: F-Define.sty
+
+
+================================================================================
+D:\EdgeDownloads\MathematicalModelingEssayTemplate-master\.gitignore 的内容:
+================================================================================
+build
+
+================================================================================
+D:\EdgeDownloads\MathematicalModelingEssayTemplate-master\parper.tex 的内容:
+================================================================================
+\documentclass[12pt, UTF8, a4paper]{ctexart}
+\usepackage[]{src/F-Define}
+
+\begin{document}
+
+\include{src/A-Cover.tex}
+\include{src/B-Analysis.tex}
+\include{src/C-Solution.tex}
+\include{src/D-Material.tex}
+
+\end{document}
+
+
+================================================================================
+D:\EdgeDownloads\MathematicalModelingEssayTemplate-master\.vscode\settings.json 的内容:
+================================================================================
+{
+    // 将默认编译器改为 xelatex，这样在代码环境中就可以输入中文了
+    "latex-workshop.latex.recipe.default": "latexmk (xelatex)",
+
+    // 将tex编译pdf时产生的中间文件存放到build目录中，与此同时，.gitignore文件会告诉git忽略该文件夹
+    "latex-workshop.latex.outDir": "%DIR%/build"
+}
+
+================================================================================
+D:\EdgeDownloads\MathematicalModelingEssayTemplate-master\src\A-Cover.tex 的内容:
+================================================================================
+\thispagestyle{empty}   % 定义起始页的页眉页脚格式为 empty —— 空，也就没有页眉页脚
+
+\begin{center}
+    \textbf{\fontsize{20}{1.5}这里是论文标题}
+
+    \textbf{摘　要}
+\end{center}
+
+% ==================================================
+% @brief    论文摘要
+% ==================================================
+
+这里是论文摘要\newline \newline
+
+% \newline 与 \\效果相同 
+% \linebreak 强制换行
+
+\textbf{关键词}：爱生活 \quad 爱化学 \quad 爱化学老师
+
+
+================================================================================
+D:\EdgeDownloads\MathematicalModelingEssayTemplate-master\src\B-Analysis.tex 的内容:
+================================================================================
+% 设置页码计数器为 1 （也就是当前页面为第一页）
+\setcounter{page}{1}
+
+% ==================================================
+% @brief    问题重述
+% ==================================================
+
+\mcmSection{问题重述}
+
+\mcmSubsection{问题背景}
+
+这里是问题背景。
+
+\mcmSubsection{问题重述}
+
+这里是问题重述。
+
+
+% ==================================================
+% @brief    问题分析
+% ==================================================
+
+\mcmSection{问题分析}
+
+\mcmSubsection{分析}
+
+这里是问题分析。
+
+
+% ==================================================
+% @brief    模型假设
+% ==================================================
+
+\mcmSection{模型假设}
+
+\begin{enumerate}
+    \item 这里是假设一
+    \item 这里是假设二
+    \item 这里是假设三
+\end{enumerate}
+
+% ==================================================
+% @brief    符号说明
+% ==================================================
+
+\mcmSection{符号说明及名称定义}
+
+\begin{table}[H] %[h]表示在此处添加浮动体，默认为tbf，即页面顶部、底部和空白处添加
+		\captionsetup{skip=4pt} % 设置标题与表格的间距为4pt
+		\centering
+		\setlength{\arrayrulewidth}{2pt} % 设置表格线条宽度为1pt
+		\begin{tabular}{cc} %c表示居中，l表示左对齐，r表示右对齐，中间添加“|”表示竖线
+			\hline
+			\makebox[0.15\textwidth][c]{符号} & \makebox[0.6\textwidth][c]{说明}  \\ 
+			\hline
+			
+			$x{(t)}$ & \text {人体内t时刻的药物含量}  \\
+			$t$ & \text {时间}  \\
+			$K$ & \text {比例系数}  \\
+			$D$ & \text {摄入总量}  \\
+		    $c{(t)}$ & \text {人体内t时刻的药物浓度}  \\
+			$F$ & \text {摄入药物吸收率}  \\
+			$r_1$ & \text {人体吸收速率}  \\
+			$r_2$ & \text {人体排泄速率}  \\
+			$V$ & \text {表现分布容积}  \\
+			$W$ & \text {病人体重}  \\
+			$y$ & \text {单位体重用药药量}   \\
+			$V_d$ & \text {表观分布容积}   \\
+			$t_{0.5}$ &\text {药物半衰期}   \\
+			$k$ & \text {消除速率常数}   \\
+			$d$ & \text {总药物量}   \\
+			$c_{s}$ & \text {目标稳态浓度}   \\
+			
+			\hline
+		\end{tabular}
+		% \hline是横线，采用\makebox设置列宽
+	\end{table}
+
+
+================================================================================
+D:\EdgeDownloads\MathematicalModelingEssayTemplate-master\src\C-Solution.tex 的内容:
+================================================================================
+\mcmSection{模型的建立与求解}
+
+\mcmSubsection{问题一：你爱化工原理吗}
+
+根据质量守恒定律、动量定理、能量守恒定律和黏性定律，存在流体力学基本方程组：
+
+\begin{equation}
+    \begin{cases}
+        \frac{\partial\rho}{\partial t} + \nabla \cdot (\rho u) = 0 &\text{连续性方程}  \\
+        \rho \frac{Du}{Dt} = \rho F + \nabla \cdot P &\text{运动方程}    \\
+        \rho \frac{De}{Dt} = P:S + \nabla \cdot (k\nabla T) + \rho \dot{q}  &\text{能量方程}
+    \end{cases}
+\end{equation}
+
+
+\mcmSubsection{问题二：你爱化工原理老师吗}
+
+\begin{mcmTheorem}{勾股定理}
+\label{theorem:勾股定理}
+已知直角三角形的直角边为$a$、$b$，斜边为$c$，则存在：
+
+\begin{equation}
+    a^2 + b^2 = c^2
+\end{equation}
+
+\end{mcmTheorem}
+
+定理\ref{theorem:勾股定理}
+
+\mcmSection{模型的评价与改进}
+
+================================================================================
+D:\EdgeDownloads\MathematicalModelingEssayTemplate-master\src\D-Material.tex 的内容:
+================================================================================
+% =======================================
+% 参考文献
+% =======================================
+
+\bibliography{src/E-Reference}
+
+% 引用所有 E-Reference.bib 里面的全部参考文献，不论在论文中是否被引用
+\nocite{*}
+
+
+\appendix
+\section{主要使用的软件}
+
+\begin{enumerate}
+    \item 文字编辑：\LaTeX + Git + Zotero
+    \item 程序模拟：PyCharm + Python + Matlab
+    \item 绘图软件：XMind + ProcessOn + PowerPoint
+\end{enumerate}
+
+\section{程序代码}
+
+\begin{lstlisting}[caption={类的定义语句}]
+#include<iostream>
+using namespace std;
+
+int main(){
+    cout << "Hello, 数学建模" << endl;
+    return 0;
+}
+\end{lstlisting}
+
+================================================================================
+D:\EdgeDownloads\MathematicalModelingEssayTemplate-master\src\E-Reference.bib 的内容:
+================================================================================
+@phdthesis{caoJiyuchengkedengdaishijiandechengshiguidaojiaotongliecheshikebiaoyouhuamoxingyusuanfayanjiu2021,
+  type = {{硕士}},
+  title = {{基于乘客等待时间的城市轨道交通列车时刻表优化模型与算法研究}},
+  author = {曹, 璐},
+  year = {2021},
+  doi = {10.26944/d.cnki.gbfju.2021.001755},
+  langid = {chinese},
+  school = {北京交通大学},
+}
+
+================================================================================
+D:\EdgeDownloads\MathematicalModelingEssayTemplate-master\src\F-Define.sty 的内容:
+================================================================================
+\ProvidesPackage{F-Define}
+
+\RequirePackage[]{geometry}    			 	% 页面边距设置
+\RequirePackage[UTF8,heading=true]{ctex} 	% 中文支持
+\RequirePackage[]{graphicx}     			% 图形支持
+\RequirePackage[]{amsmath}      			% 数学公式支持
+\RequirePackage[]{amssymb}     			    % 数学符号支持
+\RequirePackage[]{amsthm}       			% 数学定理环境
+\RequirePackage{booktabs}       			% 表格美化
+\RequirePackage{float}          			% 浮动体控制
+\RequirePackage{subfig}        			 	% 子图支持
+\RequirePackage{listings}       			% 代码展示
+\RequirePackage{color}          			% 颜色支持
+\RequirePackage[table,xcdraw]{xcolor} 		% 扩展颜色支持
+\RequirePackage{gbt7714}        	 		% 参考文献格式
+\RequirePackage{fancyhdr}       			% 页眉页脚设置
+\RequirePackage{url}           				% URL 支持
+\RequirePackage{hyperref}       			% 超链接支持
+\RequirePackage{enumitem}       			% 列表环境定制
+\RequirePackage{multirow}       			% 表格多行单元格
+\RequirePackage{caption}        			% 图表标题设置
+\RequirePackage{longtable}      			% 长表格支持
+\RequirePackage{algorithmic}   			 	% 算法描述
+\RequirePackage{algorithm}     			 	% 算法环境
+\RequirePackage{abstract}       			% 摘要格式设置
+\RequirePackage{pythonhighlight} 			% Python 代码高亮
+
+% 图片路径设置
+\graphicspath{{figures/}}
+
+% 参考文献设置
+\bibliographystyle{gbt7714-numerical}
+
+% 页面设置
+\geometry{a4paper,left=2.7cm,right=2.7cm,top=2.54cm,bottom=2.54cm}
+
+% 定义页眉页脚格式——没有页眉，页脚中部放置页码。
+\pagestyle{plain}
+
+% 修改行间距
+\linespread{1.25}
+
+% 摘要格式设置
+\setlength{\abstitleskip}{0em}
+\setlength{\absleftindent}{0pt}
+\setlength{\absrightindent}{0pt}
+\setlength{\absparsep}{0em}
+\renewcommand{\abstractname}{\textbf{\zihao{4}{摘要}}}
+\renewcommand{\abstracttextfont}{\zihao{-4}}
+
+% 图表标题设置
+\captionsetup[figure]{labelsep=space}
+\captionsetup[table]{labelsep=space}
+\captionsetup[figure]{labelsep=space}     	%去除图标题的冒号
+\captionsetup[table]{labelsep=space}     	%去除表格标题的冒号
+
+% ==============================================
+% @brief    将阿拉伯数字转化为汉字
+% @detail   目前只能转换10以内的数字
+% ==============================================
+\newcommand{\mcmCNumber}[1]{%
+    \ifcase#1
+        零%
+    \or
+        一%
+    \or
+        二%
+    \or
+        三%
+    \or
+        四%
+    \or
+        五%
+    \or
+        六%
+    \or
+        七%
+    \or
+        八%
+    \or
+        九%
+    \or
+        十%
+    \else
+        UnKnown%
+    \fi
+}
+
+
+% ========================================
+% @brief    一级标题（汉字标号）
+% @detail   这是最高等级的章节命令
+% ========================================
+\newcommand{\mcmSection}[1]{
+    % 章节计数器自增一
+    \stepcounter{section}
+
+    % 将该section添加到标题添加到书签中
+    \addcontentsline{toc}{section}{\thesection　#1}
+
+    % 具体的标题
+    \begin{center}
+        \textbf{\fontsize{20}{1.5}{
+            \mcmCNumber{\value{section}}、#1
+        }}
+    \end{center}
+}
+
+
+
+% ========================================
+% @brief    二级标题（汉字标号）
+% ========================================
+\newcommand{\mcmSubsection}[1]{
+    \subsection{#1}
+}
+
+
+
+% ========================================
+% @brief    三级标题（汉字标号）
+% ========================================
+\newcommand{\mcmSubsubsection}[1]{
+    \subsubsection{#1}
+}
+
+
+
+% ========================================
+% @brief    算法描述的元环境
+% ========================================
+\newlist{mcmMetaArithmetic}{enumerate}{2}
+\setlist[mcmMetaArithmetic]{
+    label=(\arabic*),
+    before=\bfseries,
+    itemsep=10pt
+    }
+
+
+% ========================================
+% @brief    算法描述
+% ========================================
+\newenvironment{mcmArithmetic}{
+    算法清单
+    \begin{mcmMetaArithmetic}
+}{
+    \end{mcmMetaArithmetic}
+}
+
+
+% ======================================================
+% @brief    设置目录超链接
+% ======================================================
+\hypersetup{
+    colorlinks=true,        % 启用超链接的颜色显示
+    linkcolor=black,        % 将超链接的颜色设置为黑色
+    filecolor=black,        % 将文件链接的颜色设置为黑色
+    urlcolor=black,         % 将URL链接的颜色设置为黑色
+    pdftitle={Paper},       % 将PDF文件的标题设置为“Paper”
+    bookmarks=true,         % 生成 PDF 书签
+    pdfpagemode=FullScreen, % 在打开PDF文件时，将其设置为全屏模式
+    %bookmarksnumbered=true,% 书签自带章节编号
+}
+
+
+% ======================================================
+% @brief    定义“例题”环境
+% ======================================================
+
+% 例题计数器
+\newcounter{questionCounter}
+
+% 例题环境
+\newenvironment{question}
+    {
+        \kaishu
+        \refstepcounter{questionCounter}
+        {\heiti 例题} \thequestionCounter　
+    }
+    {}
+
+% 例题环境（不计数版本）
+\newenvironment{question*}
+    {
+        \kaishu
+        {\heiti 例题}
+    }
+    {}
+
+
+
+% ===================================================
+% @brief        “代码”环境
+% @attention    要想在代码环境中添加中文字体，请选择xelatex编译进行编译
+% ===================================================
+\lstset{
+    % 基本代码风格
+    basicstyle          =   \ttfamily,
+    % 关键字风格
+    keywordstyle        =   \bfseries,
+    % 注释的风格，斜体
+    commentstyle        =   \rmfamily\itshape,
+    % 字符串风格
+    stringstyle         =   \ttfamily,
+    % 别问为什么，加上这个
+    flexiblecolumns,
+    % 行号的位置在左边
+    numbers             =   left,
+    % 是否显示空格，显示了有点乱，所以不显示了
+    showspaces          =   false,
+    % 行号的样式，小五号，tt等宽字体
+    numberstyle         =   \zihao{-4}\ttfamily,
+    showstringspaces    =   false,
+    % 这段代码的名字所呈现的位置，t指的是top上面
+    captionpos          =   t,
+    % 显示边框
+    frame               =   lrtb,
+    % 自动换行
+    breaklines          =   true
+}
+
+
+
+% ======================================================
+% @brief    定理
+% ======================================================
+\newcounter{mcmTheoremCounter}
+\newenvironment{mcmTheorem}[1]{
+    % 为了和其他文本区分，定理内部用楷书显示
+    \kaishu
+
+    % 引用计数器加一，这里不使用stepcounter命令给计数器加一！！！
+    \refstepcounter{mcmTheoremCounter}
+
+    % 换行
+    \quad\newline
+
+    % 标题
+    {\heiti 定理 \themcmTheoremCounter \quad #1}
+}{}
+
